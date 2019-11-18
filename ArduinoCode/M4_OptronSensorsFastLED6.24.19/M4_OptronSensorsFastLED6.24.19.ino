@@ -1,16 +1,16 @@
 // Dotstar Includes:
 #include <Arduino.h>
 #include <AsyncDelay.h>
-
+#include "Headers.h"
 #include <FastLED.h>
 
 FASTLED_USING_NAMESPACE
 
-// FastLED "100-lines-of-code" demo reel, showing just a few 
-// of the kinds of animation patterns you can quickly and easily 
-// compose using FastLED.  
+// FastLED "100-lines-of-code" demo reel, showing just a few
+// of the kinds of animation patterns you can quickly and easily
+// compose using FastLED.
 //
-// This example also shows one easy way to define multiple 
+// This example also shows one easy way to define multiple
 // animations patterns and have them automatically rotate.
 //
 // -Mark Kriegsman, December 2014
@@ -135,18 +135,18 @@ ZX_Sensor zx_sensor = ZX_Sensor(ZX_ADDR);
 uint8_t x_pos[8];
 uint8_t z_pos[8];
 
-// --- TCASESELECT --- 
+// --- TCASESELECT ---
 //
 // Set port to begin reading from
-// 
+//
 // @param port_num  Port to read from
 //
-void tcaseselect(uint8_t port_num) 
+void tcaseselect(uint8_t port_num)
 {
   if (port_num < 8) {
     Wire.beginTransmission(TCAADDR);
     Wire.write(1 << port_num);
-    Wire.endTransmission();  
+    Wire.endTransmission();
   }
 }
 
@@ -173,9 +173,9 @@ typedef union {
 
 
 void setup() {
-  Serial.begin(230400); // Initialize serial port 
+  Serial.begin(230400); // Initialize serial port
   delay(3000); // 3 second delay for recovery
-  
+
   // tell FastLED about the LED strip configuration
   FastLED.addLeds<LED_TYPE,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   //FastLED.addLeds<LED_TYPE,DATA_PIN,CLK_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
@@ -192,7 +192,7 @@ void setup() {
     #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
         Fastwire::setup(400, true);
     #endif
-    
+
 //  Serial.begin(115200);
   analogReadResolution(12); // 12 bit analog
   delay(5000);
@@ -208,9 +208,9 @@ void setup() {
     accelgyro.setXGyroOffset(140); // was 220, 120=-.25, 180=.56, 150=.19, 135=-.06, 140=0
     accelgyro.setYGyroOffset(-10); // 76 = 1.192, 100=1.5, 50=0.8, 20=.35, -20=-.15, -10=0
     accelgyro.setZGyroOffset(60); //-75=-1.9, -20=-1., 20=-.5, 40=-.2, 60=.0
-    
 
-  
+
+
   #ifdef OUTPUT_READABLE
   Serial.println("Scanning for i2c MUXed devices...");
   #endif
@@ -229,12 +229,12 @@ void setup() {
          #endif
          zx_sensor.init();
       }
-          
+
     }
         #ifdef OUTPUT_READABLE
         Serial.println("\ndone");
         #endif
-        
+
   delay(1000);
 }
 
@@ -245,7 +245,7 @@ void loop()
   querySerial();
 
   callPatterns();
-/*  
+/*
   // Call the current pattern function once, updating the 'leds' array
   gPatterns[gCurrentPatternNumber]();
 */
@@ -262,10 +262,10 @@ void loop()
     //Serial.println(currentMillis);
     // save the last time you sent vals
     previousMillis = currentMillis;
-    
+
     // clear MPU fifo
-    accelgyro.resetFIFO(); 
-    
+    accelgyro.resetFIFO();
+
     // Read Sparkfun XZ sensor and report vals
     readXZ();
 
@@ -274,7 +274,7 @@ void loop()
 
     // Now measure MPU6050, update values in global registers
     measure_mpu6050();
-    
+
     // Send new data out to Serial (either binary or human redable specified up top
     sendVals();
 
