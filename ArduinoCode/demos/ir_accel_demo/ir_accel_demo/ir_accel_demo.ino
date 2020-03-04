@@ -70,7 +70,6 @@ void setup()
     for (uint8_t t=0; t<IR_COUNT; t++) 
     {
       tcaseselect(t);
-      return;
       Wire.beginTransmission(ZX_ADDR);
       byte error = Wire.endTransmission();
       if (error == 0)
@@ -96,8 +95,6 @@ void loop()
 
   // notify
   Serial.println( "RUN" );
-  return;
-
   
   #if MPU
     // get mpu
@@ -117,7 +114,7 @@ void loop()
     // print IR:
     for (uint8_t t=0; t<IR_COUNT; t++) 
     {
-      Serial.print( "ZX SENSOR: < " ); Serial.print( x_pos[t] ); Serial.print( ", " ); Serial.print( z_pos[t] ); Serial.println( " >" );
+      Serial.print( "ZX SENSOR (" ); Serial.print( t ); Serial.print( "): < " ); Serial.print( x_pos[t] ); Serial.print( ", " ); Serial.print( z_pos[t] ); Serial.println( " >" );
     }
   #endif
 }
@@ -137,14 +134,15 @@ void measure_mpu6050()
 void readXZ()
 {
   // TCA loop to read all 8 sensor ports
-  for (uint8_t t=0; t<8; t++) {
+  for (uint8_t t=0; t<IR_COUNT; t++) {
     tcaseselect(t);
+    delay( 10 );
     // If there is position data available, read and print it
     if ( zx_sensor.positionAvailable() ) {
+      Serial.println( "HERE" );
       x_pos[t] = zx_sensor.readX();
       z_pos[t] = zx_sensor.readZ();
     }
-    
   } // end TCA loop
 }
 
