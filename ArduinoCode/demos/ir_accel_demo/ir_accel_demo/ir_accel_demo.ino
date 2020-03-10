@@ -7,15 +7,15 @@
 #include <ZX_Sensor.h>
 
 // defines:
-#define MPU 0
+#define MPU 1
 #define IR 1
-#define INTERVAL        100
+#define INTERVAL          100
 #define SERIAL_BAUD_RATE  19200
 #define MPU_ADDR 0x68
 #define ZX_ADDR 0x10
-#define TCAADDR 0x71
+#define TCAADDR 0x70
 #define INTERRUPT_PIN 11
-#define IR_COUNT 7
+#define IR_COUNT 8
 
 // globals:
 unsigned long previous_millis;
@@ -42,104 +42,89 @@ void tcaseselect(uint8_t);
 
 volatile bool mpuInterrupt = false;     // indicates whether MPU interrupt pin has gone high
 void dmpDataReady() {
-    mpuInterrupt = true;
+  mpuInterrupt = true;
 }
 
 void setup()
 {
   // serial
   Serial.begin( SERIAL_BAUD_RATE );
-  
-  // notify
-  Serial.println( "SETUP STARTING" );
-  
+
   Wire.begin();
-  delay( 1000 );
-  
+
   // mpu
-  #if MPU
-    accelgyro.initialize();
-    accelgyro.setZAccelOffset(1000); // 1688 factory default for my test chip
-    accelgyro.setXGyroOffset(140); // was 220, 120=-.25, 180=.56, 150=.19, 135=-.06, 140=0
-    accelgyro.setYGyroOffset(-10); // 76 = 1.192, 100=1.5, 50=0.8, 20=.35, -20=-.15, -10=0
-    accelgyro.setZGyroOffset(60); //-75=-1.9, -20=-1., 20=-.5, 40=-.2, 60=.0
-    delay( 1000 );
-  #endif
+#if MPU
+  accelgyro.initialize();
+  accelgyro.setZAccelOffset(1000); // 1688 factory default for my test chip
+  accelgyro.setXGyroOffset(140); // was 220, 120=-.25, 180=.56, 150=.19, 135=-.06, 140=0
+  accelgyro.setYGyroOffset(-10); // 76 = 1.192, 100=1.5, 50=0.8, 20=.35, -20=-.15, -10=0
+  accelgyro.setZGyroOffset(60); //-75=-1.9, -20=-1., 20=-.5, 40=-.2, 60=.0
+  delay( 1000 );
+#endif
   // IR
-  #if IR
-    for (uint8_t t=0; t<IR_COUNT; t++) 
-    {
-      tcaseselect(t);
-      Wire.beginTransmission(ZX_ADDR);
-      byte error = Wire.endTransmission();
-      if (error == 0)
-      {
-         zx_sensor.init();
-      }
-    }
-  #endif
-  
+#if IR
+  for (uint8_t t = 0; t < IR_COUNT; t++)
+  {
+    tcaseselect(t);
+    zx_sensor.init();
+  }
+#endif
+
   // timing
   previous_millis = 0;
   current_millis = millis( );
-  
-  // notify
-  Serial.println( "SETUP COMPLETE" );
 }
 
-void loop() 
+void loop()
 {
   current_millis = millis( );
-  if( (current_millis - previous_millis) < INTERVAL ) return;
+  if ( (current_millis - previous_millis) < INTERVAL ) return;
   previous_millis = current_millis;
 
-  // notify
-  Serial.println( "RUN" );
-  
-  #if MPU
-    // get mpu
-    measure_mpu6050( );
-    // print mpu
-    Serial.print( "AX: " ); Serial.print( ax ); Serial.print( "  " );
-    Serial.print( "AY: " ); Serial.print( ay ); Serial.print( "  " );
-    Serial.print( "AZ: " ); Serial.print( az ); Serial.println( );
-    Serial.print( "GX: " ); Serial.print( gx ); Serial.print( "  " );
-    Serial.print( "GY: " ); Serial.print( gy ); Serial.print( "  " );
-    Serial.print( "GZ: " ); Serial.print( gz ); Serial.println( );
-  #endif
+#if MPU
+  // get mpu
+  measure_mpu6050( );
+  // print mpu
+  Serial.print( "AX: " ); Serial.print( ax ); Serial.print( "  " );
+  Serial.print( "AY: " ); Serial.print( ay ); Serial.print( "  " );
+  Serial.print( "AZ: " ); Serial.print( az ); Serial.println( );
+  Serial.print( "GX: " ); Serial.print( gx ); Serial.print( "  " );
+  Serial.print( "GY: " ); Serial.print( gy ); Serial.print( "  " );
+  Serial.print( "GZ: " ); Serial.print( gz ); Serial.println( );
+  Serial.println( );
+#endif
 
-  #if IR
-    // get IR:
-    readXZ( );
-    // print IR:
-    for (uint8_t t=0; t<IR_COUNT; t++) 
-    {
-      Serial.print( "ZX SENSOR (" ); Serial.print( t ); Serial.print( "): < " ); Serial.print( x_pos[t] ); Serial.print( ", " ); Serial.print( z_pos[t] ); Serial.println( " >" );
-    }
-  #endif
+#if IR
+  // get IR:
+  readXZ( );
+  // print IR:
+  for (uint8_t t = 0; t < IR_COUNT; t++)
+  {
+    Serial.print( "ZX SENSOR (" ); Serial.print( t ); Serial.print( "): < " ); 
+    Serial.print( x_pos[t] ); Serial.print( ", " ); Serial.print( z_pos[t] ); Serial.println( " >" );
+  }
+   Serial.println( );
+#endif
 }
 
 void measure_mpu6050()
 {
-    accelgyro.resetFIFO();
-    
-    // read raw accel/gyro measurements from device
-    accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+  accelgyro.resetFIFO();
 
-    // these methods (and a few others) are also available
-    //accelgyro.getAcceleration(&ax, &ay, &az);
-    //accelgyro.getRotation(&gx, &gy, &gz);
+  // read raw accel/gyro measurements from device
+  accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+
+  // these methods (and a few others) are also available
+  //accelgyro.getAcceleration(&ax, &ay, &az);
+  //accelgyro.getRotation(&gx, &gy, &gz);
 }
 
 void readXZ()
 {
   // TCA loop to read all 8 sensor ports
-  for (uint8_t t=0; t<IR_COUNT; t++) {
+  for (uint8_t t = 0; t < IR_COUNT; t++) {
     tcaseselect(t);
-    delay( 10 );
-    // If there is position data available, read and print it
     if ( zx_sensor.positionAvailable() ) {
-      Serial.println( "HERE" );
       x_pos[t] = zx_sensor.readX();
       z_pos[t] = zx_sensor.readZ();
     }
