@@ -4,6 +4,9 @@ void querySerial()
 {
   // listen for serial:
   // set color arrays
+  //String serialstring= Serial.readString();
+  //Serial.println("This: ");
+  //Serial.println(serialstring[1]);
   while (Serial.available() > 0) {
 
     char anal = Serial.read(); 
@@ -23,14 +26,19 @@ void querySerial()
         patternEnArray[2] = false; // Rainbow
         
      // parse RGB
-        BGiParams[0] = Serial.parseInt();     // then an ASCII number for red
+
+        BGiParams[0] = Serial.parseInt();     // then an ASCII number for red    
         BGiParams[1] = Serial.parseInt();   // then an ASCII number for green
         BGiParams[2] = Serial.parseInt();    // then an ASCII number for blue
+        if(BGiParams[0]==0 && BGiParams[1]==0 && BGiParams[2]==0){
+          patternEnArray[0] = false;  // BGi turned off due to red/green/blue 0
+        }
+        else{
         BGiParams[3] = Serial.parseInt();   // then an ASCII number for start
         BGiParams[4] = Serial.parseInt();    // then an ASCII number for length
 
         clipLen(&BGiParams[3],&BGiParams[4]);
-     
+        }
       }}
 
       if(anal == 'O') 
@@ -449,301 +457,79 @@ void clipLen(uint8_t *ledStart, uint8_t *ledLen)
     *ledLen = NUM_LEDS - *ledStart;
 }
 
-void BGi()
-{
+
+
+void BGi(){
+  
   //  Set LEDs and save BG color values
-     fill_solid( &(leds[BGiParams[3]]), BGiParams[4], CRGB( BGiParams[0], BGiParams[1], BGiParams[2]) );
+     //fill_solid( &(leds[BGiParams[3]]), BGiParams[4], CRGB( BGiParams[0], BGiParams[1], BGiParams[2]) );
+     b1.callPattern();
 }
 
-void HSv()
-{
+void HSv(){
   //  Set LEDs and save BG color values
-     fill_solid( &(leds[HSVParams[3]]), HSVParams[4], CHSV( HSVParams[0], HSVParams[1], HSVParams[2]) );
+     //fill_solid( &(leds[HSVParams[3]]), HSVParams[4], CHSV( HSVParams[0], HSVParams[1], HSVParams[2]) );
+     h1.callPattern();
 }
 
-void rainbow() 
-{
+void rainbow() {
   // FastLED's built-in rainbow generator
-  fill_rainbow( &(leds[BOWParams[1]]), BOWParams[2], gHue, BOWParams[0]);
-  fadeLightBy( leds, NUM_LEDS, BOWParams[3]);
-  EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
-
+  //fill_rainbow( &(leds[BOWParams[1]]), BOWParams[2], gHue, BOWParams[0]);
+  //fadeLightBy( leds, NUM_LEDS, BOWParams[3]);
+  //EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
+  rb.callPattern();
 }
 
-void ticks()
-{
-  // Step 0: Copy contents of LEDs to LED_Buffer
-  memmove8(&LED_BUFFER, &leds, NUM_LEDS*sizeof(CRGB));
-  uint8_t numTicks = TCKParams[5]; // pull num ticks 
 
-  for(int i=0; i < NUM_LEDS; i++)
-  {
-    LED_BUFFER[i] += tickOverlay[i];
-  }
-
-// Fade out and shift over in direction till you hit original position of next led over
-  EVERY_N_MILLISECONDS(1)
-    {
-      
-      if(numTicks>0)
-      {
-        tickOverlay[NUM_LEDS-1] = CRGB( 0, 0, 0); // set top led to black
-        
-        for(int i=0; i < NUM_LEDS-1; i++)
-        {
-          tickOverlay[i] = tickOverlay[i+1];
-        }
-        
-      TCKParams[5] = numTicks-1; // decrease tick count by 1
-      
-      }
-      
-      fadeLightBy( tickOverlay, NUM_LEDS, 40);
-    }
-  
-  
-  
-  // Push LED buffer to LED array for writing
-  memmove8(&leds, &LED_BUFFER, NUM_LEDS*sizeof(CRGB));
+void ticks(){
+  t1.callPattern();
   
 }
 
-void drumKit()
-{
-  
-  // Step 0: Copy contents of LEDs to LED_Buffer
-  memmove8(&LED_BUFFER, &leds, NUM_LEDS*sizeof(CRGB));
-  // Step 1:
-  // First, create overlay of dim colored dots at the ZX sensor positions
-  
-  uint8_t len = 4; // Length 
-  
-  // fill overlay cells with dim color blobs at each ZX position
-  for( byte i = 0; i < 8; i++)
-  { 
-    uint8_t index = ZXSensorPos[i];
-                                                      // There are 169 LEDs, but 255 steps in the gradient
-    int colorindex = map(index, 0, NUM_LEDS, 0, 240); // map total number of LEDs to full gradient value depending on ZX position
-
-    // ADD minimum colors/brightness targets to buffer
-    // Have color volume of 10 no matter what so I can see where to hit
-      LED_BUFFER[index] += ColorFromPalette(drumPalette, colorindex, 10);
-      LED_BUFFER[index+1] += ColorFromPalette(drumPalette, colorindex+1, 10);
-    
-    // If drumKitSprites at the current ZX sensor have color in them still, add to to LED_BUFFER
-    if(drumKitOverlay[index])
-    {
-      LED_BUFFER[index] += drumKitOverlay[index];
-      // Set colors of pixels from outside toward center, increasing brightness in 32 steps    
-      for(int j = 0; j < len; j++)
-      {
-        byte mypoint = (len-j);
-        
-          if((index-mypoint)>=0)  // ensure we're not writing to index off the strip
-          {
-            // Map to main leds array immediately
-            LED_BUFFER[index-mypoint] = drumKitOverlay[index-mypoint];
-          }
-          if((index+mypoint)<(NUM_LEDS-1)) // ensure we're not writing to index off the strip
-          {
-            LED_BUFFER[index+mypoint] = drumKitOverlay[index+mypoint];
-          }
-
-        }
-    }
-
-    // Fade all Kit Sprites down a little
-    // last number is fade speed
-    EVERY_N_MILLISECONDS(9)
-    {
-      fadeToBlackBy( drumKitOverlay, NUM_LEDS, 20);
-    }
-    // Push LED buffer to LED array for writing
-    memmove8(&leds, &LED_BUFFER, NUM_LEDS*sizeof(CRGB));
-  
-  }
-
+void drumKit(){
+  DK.callPattern(); 
 }
 
-void ARGB()
-{
-  // We're realy using HSV, not RGB, so Hue values will be
-  // 0 = RED, 96 = GREEN, 160 = BLUE
-  
-  // Step 0: Copy contents of LEDs to LED_Buffer
-  memmove8(&LED_BUFFER, &leds, NUM_LEDS*sizeof(CRGB));
-    for(int i = 0; i < 3; i++)
-      {
-        int RC = ARGBParams[0+(i*3)];  // RmyIndex point start
-        int RW = ARGBParams[1+(i*3)];  // R wideness
-        int RB = ARGBParams[2+(i*3)];  // R brightness
-        
-  // draw pixels for each R, G, then B
-        for(int j = 0; j < RW; j++)
-        {
-          LED_BUFFER[RC+j] += CHSV( RGBHSV[i], 255, RB);
-          // Clear LED Array
-          //fill_solid( &(LED_BUFFER[RC]), RW, CHSV( RGBHSV[i], 255, RB) );
-        }
-      }
 
-    // Push LED buffer to LED array for writing
-    memmove8(&leds, &LED_BUFFER, NUM_LEDS*sizeof(CRGB));
+void ARGB(){
+  Ar.callPattern();
 }
-
 
 
 void funfetti() 
 {
-  // Param array: h, v, start, len, dens
-  // Step 0: Copy contents of LEDs to LED_Buffer
-  memmove8(&LED_BUFFER, &leds, NUM_LEDS*sizeof(CRGB));
-  // random colored speckles that blink in and fade smoothly
-  fadeToBlackBy( funfettiOverlay, NUM_LEDS, 64);
-
-  // Determine which LEDs will light up stochastically
-  for(int i = CFIParams[2]; i < (CFIParams[2]+CFIParams[3]); i++)
-  {
-    int prob = random16(1024); // roll a 100-sided dice
-    //funfettiOverlay[i] += CHSV( CFIParams[0] + random8(64), 200, prob);
-    
-    if(prob < CFIParams[4])
-    {
-      //glitterPos = i; // report funfetti pixel to serial for potential sonification
-      funfettiOverlay[i] += CHSV( CFIParams[0] + random8(64), 200, CFIParams[1]);
-    }
-    
-  }
-
-  // copy funfetti onto buffer
-  for(int i = 0; i < NUM_LEDS; i++)
-  {
-    LED_BUFFER[i] += funfettiOverlay[i];
-  }
-
-  // Push LED buffer to LED array for writing
-  memmove8(&leds, &LED_BUFFER, NUM_LEDS*sizeof(CRGB));
+  FF.callPattern();
 }
+
 
 // Bell Cloud colors
 void bell()
 {
-  
-  // Step 0: Copy contents of LEDs to LED_Buffer
-  memmove8(&LED_BUFFER, &leds, NUM_LEDS*sizeof(CRGB));
-  // Step 1:
-  // First, create overlay of dim colored dots at the ZX sensor positions
-  
-  uint8_t len = 4; // Length 
-  
-  // fill overlay cells with dim color blobs at each ZX position
-  for( byte i = 0; i < 8; i++)
-  { 
-    uint8_t index = ZXSensorPos[i];
-                                                      // There are 169 LEDs, but 255 steps in the gradient
-    int colorindex = map(index, 0, NUM_LEDS, 0, 240); // map total number of LEDs to full gradient value depending on ZX position
-
-    // ADD minimum colors/brightness targets to buffer
-    // Have color volume of 10 no matter what so I can see where to hit
-      LED_BUFFER[index] += ColorFromPalette(bellPalette, colorindex, 10);
-      LED_BUFFER[index+1] += ColorFromPalette(bellPalette, colorindex+1, 10);
-    
-    // If drumKitSprites at the current ZX sensor have color in them still, add to to LED_BUFFER
-    if(bellOverlay[index])
-    {
-      LED_BUFFER[index] += bellOverlay[index];
-      // Set colors of pixels from outside toward center, increasing brightness in 32 steps    
-      for(int j = 0; j < len; j++)
-      {
-        byte mypoint = (len-j);
-        
-          if((index-mypoint)>=0)  // ensure we're not writing to index off the strip
-          {
-            // Map to main leds array immediately
-            LED_BUFFER[index-mypoint] = bellOverlay[index-mypoint];
-          }
-          if((index+mypoint)<(NUM_LEDS-1)) // ensure we're not writing to index off the strip
-          {
-            LED_BUFFER[index+mypoint] = bellOverlay[index+mypoint];
-          }
-
-        }
-    }
-
-    // Fade all Kit Sprites down a little
-    // last number is fade speed
-    EVERY_N_MILLISECONDS(9)
-    {
-      fadeToBlackBy( bellOverlay, NUM_LEDS, 20);
-    }
-    // Push LED buffer to LED array for writing
-    memmove8(&leds, &LED_BUFFER, NUM_LEDS*sizeof(CRGB));
-  
-  }
-
+  bl.callPattern();
 }
+
 
 // Mouth effect in foreground, overwrite LEDs at this effect
 // random variation in hue for fuzz effect because... why not?
 void mouth()
 {
-  uint8_t randomVar = 40; // ammount of random fuzz in hue
-  uint8_t theIndex = MOUParams[3];
-  uint8_t theLen = MOUParams[4];
-  // Param array: [hue, blend, v, start, len] where blend is ammount of middle leds to mix in, cool when faded completely out
-  // Step 0: Copy contents of LEDs to LED_Buffer
-  memmove8(&LED_BUFFER, &leds, NUM_LEDS*sizeof(CRGB));
-  
-  // Write mouth effect directly into LED_Buffer
-  // Set colors of pixels from outside toward center, increasing brightness in 32 steps    
-  for(int i = 0; i < theLen; i++)
-  {
-    uint8_t myPoint = theLen-i; // Calculate write point
-    //float myVol = MOUParams[2] * (myPoint/theLen); // calculate brightness as ratio away from center point
-    
-    LED_BUFFER[theIndex] = CHSV( MOUParams[0] + random8(randomVar), MOUParams[1], MOUParams[2]);
-    
-    // write to the start position minus calculated write point
-    if((theIndex-myPoint)>=0)
-    {
-      if(!i) // end points always exact hsv as center point
-        LED_BUFFER[theIndex-myPoint] = CHSV( MOUParams[0] + random8(randomVar), 255, MOUParams[2]);
-      else // middle stuff takes into account blend
-        LED_BUFFER[theIndex-myPoint] = CHSV( MOUParams[0] + random8(randomVar), 255, MOUParams[1]);
-
-    }
-    if((theIndex+myPoint)<(NUM_LEDS-1))
-    {
-      if(!i) // end points always exact hsv as center point
-        LED_BUFFER[theIndex+myPoint] = CHSV( MOUParams[0] + random8(randomVar), 255, MOUParams[2]);
-      else
-        LED_BUFFER[theIndex+myPoint] = CHSV( MOUParams[0] + random8(randomVar), 255, MOUParams[1]);
-    }
-  }
-
-  // Push LED buffer to LED array for writing
-  memmove8(&leds, &LED_BUFFER, NUM_LEDS*sizeof(CRGB));
+  mo.callPattern();
   
 }
 
 // glitterForce var is percent change or density of glitter effect
 void addGlitter() 
 {
-  if( random8() < glitterForce) {
-    uint16_t randLED = random16(NUM_LEDS);
-    leds[ randLED ] += CRGB::White;
-    glitterPos = randLED; // Report glitter pixel position out serial for sonification
-  }
+  Gl.callPattern();
   
 }
 
+
 void sinelon()
 {
-  // a colored dot sweeping back and forth, with fading trails
-  fadeToBlackBy( leds, NUM_LEDS, 20);
-  int pos = beatsin16( 13, 0, NUM_LEDS-1 );
-  leds[pos] += CHSV( gHue, 255, 192);
+  sl.callPattern();
 }
+
 
 void juggle() {
   // eight colored dots, weaving in and out of sync with each other
@@ -782,66 +568,9 @@ void setRGB()
 // Default 120, suggested range 50-200.
 #define SPARKING 120
 // June 12, 2019 Chet adds Serial control of parameters. Looks awesome.
-void fairyFire()
-{
-  // Add entropy to random number generator; we use a lot of it.
-  random16_add_entropy( random8());
 
-  CRGB darkcolor  = CHSV(FIRParams[0],255,192); // pure hue, three-quarters brightness
-  CRGB lightcolor = CHSV(FIRParams[0],128,255); // half 'whitened', full brightness
-  gPal = CRGBPalette16( CRGB::Black, darkcolor, lightcolor, CRGB::White); // set gradient color palette
-// User error check to be sure fire len is never more than NUM_LEDS, which will crash the program
-  int fireLen = FIRParams[4];
-  if(fireLen > NUM_LEDS)
-    fireLen = NUM_LEDS;
-  
-// Array of temperature readings at each simulation cell
-  static byte heat[NUM_LEDS]; // cool all leds down regardless of current length for natural cooling effect
-
-// Step 0: Copy contents of LEDs to LED_Buffer
-  memmove8(&LED_BUFFER, &leds, NUM_LEDS*sizeof(CRGB));
-// If active, fade background by 50%
-  fadeLightBy( LED_BUFFER, NUM_LEDS, 20);
-  
-  // Step 1.  Cool down every cell a little, qsub subtracts random ammount from each cell
-    for( int i = 0; i < NUM_LEDS; i++) {
-      heat[i] = qsub8( heat[i],  random8(0, ((FIRParams[2] * 10) / NUM_LEDS) + 2));
-    }
-  
-    // Step 2.  Heat from each cell drifts 'up' and diffuses a little
-    // Do this only for desired length of flame
-    for( int k= fireLen - 1; k >= 2; k--) {
-      heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2] ) / 3;
-    }
-    
-    // Step 3.  Randomly ignite new 'sparks' of heat near the bottom
-    if( random8() < FIRParams[1] ) {
-      int y = random8(7);
-      heat[y] = qadd8( heat[y], random8(160,255) );
-    }
-
-    // Step 4.  Map from heat cells to LED Buffer colors
-    for( int j = 0; j < NUM_LEDS; j++) {
-      // Scale the heat value from 0-255 down to 0-240
-      // for best results with color palettes.
-      byte colorindex = scale8( heat[j], 240);
-      CRGB color = ColorFromPalette( gPal, colorindex);
-      int pixelnumber;
-      // If Reverse Direction, flip, else don't
-      if( FIRParams[3] )
-      {
-        pixelnumber = (NUM_LEDS-1) - j;
-      } else {
-        pixelnumber = j;
-      }
-      LED_BUFFER[pixelnumber] = color;
-    }
-
-    // ADD LED buffer to LED array for layering
-    for(int i=0; i < NUM_LEDS; i++)
-    {
-      leds[i] += LED_BUFFER[i];
-    }
+void fairyFire(){
+  Fir.callPattern();
     
 }
 

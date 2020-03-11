@@ -2,7 +2,12 @@
 #include <Arduino.h>
 #include <AsyncDelay.h>
 #include "Headers.h"
-#include <FastLED.h>
+#include "Patterns.h"
+
+#define PWM_pin 6     //PWM
+#define motor_rate 1000
+#define on_percentage 50
+#define enable 1
 
 FASTLED_USING_NAMESPACE
 
@@ -14,58 +19,6 @@ FASTLED_USING_NAMESPACE
 // animations patterns and have them automatically rotate.
 //
 // -Mark Kriegsman, December 2014
-
-#define LED_TYPE    DOTSTAR
-#define COLOR_ORDER BGR
-#define NUM_LEDS    169
-CRGB leds[NUM_LEDS];        // Place for final LED buffer at end of each cycle
-CRGB LED_BUFFER[NUM_LEDS];      // volatile LED buffer for pushing/poping
-CRGB tickOverlay[NUM_LEDS]; // Create tick overlay
-CRGB drumKitOverlay[NUM_LEDS];  // Drumkit sprite buffer
-CRGB ARGBOverlay[NUM_LEDS];  // ARGB sprite buffer
-CRGB funfettiOverlay[NUM_LEDS];  // wiper buffer
-CRGB bellOverlay[NUM_LEDS];  // Drumkit sprite buffer
-
-// colored dots that pulse for drums
-CRGBPalette16 drumPalette = RainbowColors_p; // Choose a color palette
-// colored dots that glow for bells
-CRGBPalette16 bellPalette = ForestColors_p; // Choose a color palette
-// Support vars for Fire effect
-CRGBPalette16 gPal; // https://github.com/FastLED/FastLED/wiki/Gradient-color-palettes
-
-#define BRIGHTNESS          200
-#define FRAMES_PER_SECOND  120
-//#define FRAMES_PER_SECOND  240
-#define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
-
-// List of patterns to cycle through.  Each is defined as a separate function below.
-// The order in which you declare things is the order of layering from bottom to top
-// first in is written first to the strip
-typedef void (*SimplePatternList[])();
-SimplePatternList gPatterns = { BGi, HSv, rainbow, ticks, drumKit, ARGB, fairyFire, funfetti, bell, mouth, addGlitter };
-
-bool patternEnArray[ARRAY_SIZE( gPatterns)] = {0}; // Create an enable array of same size as pattern array to enable/dissable pattern layers
-
-uint8_t gCurrentPatternNumber = 0; // Index number of which pattern is current
-uint8_t gHue = 0; // rotating "base color" used by many of the patterns
-
-// LED Function Parameter Arrays (see LEDPatterns tab for functions and param descriptions)
-uint8_t BGiParams[] = {0, 0, 0, 0, NUM_LEDS}; // R, G, B, LED_start, len
-uint8_t HSVParams[] = {0, 0, 0, 0, NUM_LEDS}; // H, S, V, LED_start, len
-uint8_t BOWParams[] = {0, NUM_LEDS, 5, 0};  // Start, len, hue Delta
-uint8_t FIRParams[] = {0, 0, 0, 0, NUM_LEDS}; // Hue, Sparking, Cooling, LED_start, len
-uint8_t DKTParams[] = {0}; // on/off
-uint8_t ARGBParams[] = {1, 1, 1, 2, 2, 2, 3, 3, 3}; // indexR, wideR, brightR, indexG, wideG, brightG,indexB, wideB, brightB
-uint8_t TCKParams[] = {4, 0, 0, 0, 127, 20}; // density, direction, hue, saturation, volume, tickSteps
-uint8_t CFIParams[] = {0, 0, 0, 2, 1, 169}; // on/off h, s, v, start, len
-uint8_t MOUParams[] = {0, 0, 0, 2, 1, 169}; // on/off h, s, v, start, len
-
-uint8_t RGBHSV[] = {0, 96, 160}; //hue translation for RGB
-uint8_t glitterForce = 0; // intensity of Glitter
-uint8_t glitterPos = -1; // Place glitter randomly lights up to report back to MaxMSP
-
-// left-of-center Positions of ZX sensors relative to DotStar strip LED positions for visualization
-uint8_t ZXSensorPos[] = {10, 31, 52, 73, 94, 115, 136, 157};
 
 //==========================================================
 // Sensor Includes:
@@ -249,7 +202,10 @@ void loop()
   // Call the current pattern function once, updating the 'leds' array
   gPatterns[gCurrentPatternNumber]();
 */
-
+  analogWrite(PWM_pin, LOW);
+  delay(motor_rate);///every 100 miliseconds
+  analogWrite(PWM_pin, HIGH);
+  delay(motor_rate);///every 100 miliseconds
 
 //==========================================================
 // Sensor Stuff
