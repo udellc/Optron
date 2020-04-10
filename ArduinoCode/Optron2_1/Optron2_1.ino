@@ -191,12 +191,28 @@ void setup() {
   delay(1000);
 }
 
+// demo variables:
+bool zx_toggle = false, pressure_toggle = false, position_toggle = false, epick_toggle = false, gyro_toggle = false;
+int zx_value = 8, pressure_value = 300, position_value = 300, epick_value = 500, gyro_value = 300;
+bool toggle_pattern = false;
+uint8_t pattern_sz = ARRAY_SIZE( gPatterns);
+uint8_t pattern_idx = 0;
 
 void loop()
 {
 
   querySerial();
 
+  // toggle patterns:
+  if( toggle_pattern )
+  {
+    Serial.println( "TOGGLE" );
+    patternEnArray[pattern_idx] = false;
+    pattern_idx++;
+    pattern_idx %= pattern_sz;
+    patternEnArray[pattern_idx] = true;
+    toggle_pattern = false;
+  }
   callPatterns();
 /*
   // Call the current pattern function once, updating the 'leds' array
@@ -234,6 +250,65 @@ void loop()
     // Send new data out to Serial (either binary or human redable specified up top
     sendVals();
 
+    // CHECK TOGGLES
+    // zx
+    for (uint8_t t=0; t<8; t++) 
+    {
+      Serial.println( z_pos[t] );
+      // return to normal
+      if( z_pos[t] > zx_value )
+      {
+        zx_toggle = true;
+      }
+      // check toggle
+      if( zx_toggle && z_pos[t] <= zx_value )
+      {
+        zx_toggle = false;
+        toggle_pattern = true;
+        break;
+      }
+    }
+    // pressure
+    if( fsrVal > pressure_value )
+    {
+      pressure_toggle = true;
+    }
+    if( pressure_toggle && fsrVal < pressure_value )
+    {
+      pressure_toggle = false;
+      toggle_pattern = true;
+    }
+    // position
+    if( linVal > position_value )
+    {
+      pressure_toggle = true;
+    }
+    if( position_toggle && linVal < position_value )
+    {
+      position_toggle = false;
+      toggle_pattern = true;
+    }
+    // e-pick
+    if( ePicDownVal > epick_value )
+    {
+      epick_toggle = true;
+    }
+    if( position_toggle && ePicDownVal < epick_value )
+    {
+      epick_toggle = false;
+      toggle_pattern = true;
+    }
+    // gyro
+    if( gz > epick_value )
+    {
+      gyro_toggle = true;
+    }
+    if( gyro_toggle && gz < epick_value )
+    {
+      gyro_toggle = false;
+      toggle_pattern = true;
+    }
+    
    }
 
 }

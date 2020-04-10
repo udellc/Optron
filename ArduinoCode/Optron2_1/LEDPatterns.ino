@@ -56,11 +56,8 @@ void querySerial()
         BOWParams[2] = Serial.parseInt();   // Len
         BOWParams[3] = Serial.parseInt();   // Fade ammount, 0 strong to 255 weak
 
-        if(BOWParams[0]==0 && BOWParams[1]==0 && BOWParams[2]==0){
-          patternEnArray[2] = false;      
-        }else{
-          clipLen(&BOWParams[1],&BOWParams[2]);
-        }
+        clipLen(&BOWParams[1],&BOWParams[2]);
+        
       }}
 
       //************************************************************
@@ -145,21 +142,15 @@ void querySerial()
         patternEnArray[1] = true;  // HSv
         patternEnArray[2] = false; // Rainbow
         
-        // parse HSV
+     // parse HSV
         HSVParams[0] = Serial.parseInt();     // then an ASCII number for Hue
         HSVParams[1] = Serial.parseInt();   // then an ASCII number for Saturation
         HSVParams[2] = Serial.parseInt();    // then an ASCII number for Brightness
         HSVParams[3] = Serial.parseInt();   // then an ASCII number for start
         HSVParams[4] = Serial.parseInt();    // then an ASCII number for len
 
-        if(HSVParams[0]==0 && HSVParams[1]==0 && HSVParams[2]==0){
-          patternEnArray[1]=false;
-          Serial.println("closing thread");
-        }
-        else{
-          Serial.println("yes thread");
-          clipLen(&HSVParams[3],&HSVParams[4]);
-        }
+        clipLen(&HSVParams[3],&HSVParams[4]);
+        
       }}
       break;
 

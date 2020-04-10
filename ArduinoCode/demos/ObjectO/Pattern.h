@@ -1,10 +1,18 @@
 #define LED_TYPE    DOTSTAR
 #define COLOR_ORDER BGR
-#define NUM_LEDS  169
+#define NUM_LEDS  167
 CRGB leds[NUM_LEDS];
 
 #define BRIGHTNESS          255
 #define FRAMES_PER_SECOND  120
+
+
+uint8_t BGiParams[] = {0, 0, 0, 0, NUM_LEDS}; // R, G, B, LED_start, len
+uint8_t HSVParams[] = {0, 0, 0, 0, NUM_LEDS}; // H, S, V, LED_start, len
+uint8_t BOWParams[] = {0, NUM_LEDS, 5, 0};  // Start, len, hue Delta
+uint8_t FIRParams[] = {0, 0, 0, 0, NUM_LEDS}; // Hue, Sparking, Cooling, LED_start, len
+#define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
+
 
 
 class Pattern{  
@@ -18,9 +26,6 @@ class Pattern{
 void Pattern::setVal(int num){
   npattern= num;
 }
-/*int Pattern::nextPattern(int num){
-    return num+=1;
-}*/
 
 
 class Rainbow{
@@ -41,11 +46,11 @@ class rainbowWithGlitter : public Rainbow{
 */
 class addGlitter{
   public:
-    void callPattern();
+    void callPattern(uint8_t nGhue);
     
 };
 
-void addGlitter::callPattern(){
+void addGlitter::callPattern(uint8_t num){
   if( random8() < 80) {
     leds[ random16(NUM_LEDS) ] += CRGB::White;
   }
@@ -91,10 +96,10 @@ void Bpm::callPattern(uint8_t num){
 
 class Juggle{
   public:
-    void callPattern();
+    void callPattern(uint8_t gHue);
 };
 
-void Juggle::callPattern(){
+void Juggle::callPattern(uint8_t num){
   fadeToBlackBy( leds, NUM_LEDS, 20);
   byte dothue = 0;
   for( int i = 0; i < 8; i++) {
