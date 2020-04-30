@@ -469,52 +469,50 @@ void clipLen(uint8_t *ledStart, uint8_t *ledLen)
 
 
 void BGi(){
-  
-  //  Set LEDs and save BG color values
+     //Set LEDs and save BG color values
      //fill_solid( &(leds[BGiParams[3]]), BGiParams[4], CRGB( BGiParams[0], BGiParams[1], BGiParams[2]) );
      b1.callPattern();
 }
 
 void HSv(){
-  //  Set LEDs and save BG color values
+     //Set LEDs and save BG color values
      //fill_solid( &(leds[HSVParams[3]]), HSVParams[4], CHSV( HSVParams[0], HSVParams[1], HSVParams[2]) );
      h1.callPattern();
 }
 
 void rainbow() {
-  // FastLED's built-in rainbow generator
-  //fill_rainbow( &(leds[BOWParams[1]]), BOWParams[2], gHue, BOWParams[0]);
-  //fadeLightBy( leds, NUM_LEDS, BOWParams[3]);
-  //EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
-  rb.callPattern();
+    // FastLED's built-in rainbow generator
+    //fill_rainbow( &(leds[BOWParams[1]]), BOWParams[2], gHue, BOWParams[0]);
+    //fadeLightBy( leds, NUM_LEDS, BOWParams[3]);
+    //EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
+    rb.callPattern();
 }
 
 
 void ticks(){
-  t1.callPattern();
-  
+    t1.callPattern();
 }
 
 void drumKit(){
-  DK.callPattern(); 
+    DK.callPattern(); 
 }
 
 
 void ARGB(){
-  Ar.callPattern();
+    Ar.callPattern();
 }
 
 
 void funfetti() 
 {
-  FF.callPattern();
+    FF.callPattern();
 }
 
 
 // Bell Cloud colors
 void bell()
 {
-  bl.callPattern();
+    bl.callPattern();
 }
 
 
@@ -522,21 +520,21 @@ void bell()
 // random variation in hue for fuzz effect because... why not?
 void mouth()
 {
-  mo.callPattern();
+    mo.callPattern();
   
 }
 
 // glitterForce var is percent change or density of glitter effect
 void addGlitter() 
 {
-  Gl.callPattern();
+    Gl.callPattern();
   
 }
 
 
 void sinelon()
 {
-  sl.callPattern();
+    sl.callPattern();
 }
 
 

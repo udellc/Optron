@@ -1,9 +1,7 @@
-#include <ArduinoJson.h>
 #include <FastLED.h>
 #include <SPI.h>
 #include "Pattern.h"
 #include "Headers.h"
-#include <SD.h>
 
 FASTLED_USING_NAMESPACE
 
@@ -11,14 +9,6 @@ FASTLED_USING_NAMESPACE
 #warning "Requires FastLED 3.1 or later; check github for latest code."
 #endif
 
-// Configuration that we'll store on disk
-struct Config {
-  String ATcommand;
-  int color[8];
-};
-
-const char *filename = "/SerialCommandDemo.json";  // <- SD library uses 8.3 filenames
-Config config;
 
 typedef void (*SimplePatternList[])();
 SimplePatternList gPatterns = { rainbow, rainbowWithGlitter, confetti, sinelon, juggle, bpm };
@@ -42,38 +32,6 @@ static int mPattern=0;
 void setup() {
   delay(3000); // 3 second delay for recovery
   Serial.begin(9600);
-
-/*
-  while (!Serial) continue;
-  StaticJsonDocument<200> doc;
-  char json[] =
-      "{\"sensor\":\"gps\",\"time\":1351824120,\"data\":[48.756080,2.302038]}";
-
-  DeserializationError error = deserializeJson(doc, json);
-
-  // Test if parsing succeeds.
-  if (error) {
-    Serial.print(F("deserializeJson() failed: "));
-    Serial.println(error.c_str());
-    return;
-  }
-
-  const char* sensor = doc["sensor"];
-  long time = doc["time"];
-  double latitude = doc["data"][0];
-  double longitude = doc["data"][1];
-
-  // Print values.
-  Serial.println(sensor);
-  Serial.println(time);
-  Serial.println(latitude, 6);
-  Serial.println(longitude, 6);
-*/   
-  //testing if this json file works.
-  //FastLED.begin(); // Initialize pins for output
-  
-  //Serial.println(F("Loading configuration..."));
-  //loadConfiguration(filename, config);
 
 
   FastLED.show();  // Turn all LEDs off ASAP
@@ -101,15 +59,9 @@ void loop() {
     mPattern= (p1.nextPattern()) % ARRAY_SIZE( gPatterns );
     Serial.print(mPattern);//testing
   } // change patterns periodically
-
-  //Serial.println("asdj: ");
-  //Serial.println(config.ATcommand);
-  //Serial.println(config.color[1]);
-  //r1.rainbow(gHue);
   
   callPatterns();
-  // send the 'leds' array out to the actual LED strip
-  //FastLED.show(); 
+ 
 }
 
 void querySerial()
@@ -138,11 +90,6 @@ void querySerial()
 
       if(anal == 'O') { 
         if (Serial.read() == 'W'){ 
-        //patternEnArray[1] = true;  // Rainbow
-          //if(Serial.parseInt()=='1'){
-            //static Rainbow *ra1= new Rainbow();
-            //ra1->callPattern(gHue);
-          //}
            if(Serial.parseInt()!=0){
               patternAnArray[0]=true;}
           else{
@@ -158,9 +105,6 @@ void querySerial()
       anal = Serial.read(); //Read second char and analyze     
       if (anal == 'O'){ 
         if (Serial.read() == 'F'){ 
-        //Confetti *c1= new Confetti();
-        //c1->drawPattern(gHue);
-          //int trigger=Serial.parseInt();
           if(Serial.parseInt()!=0){
             patternAnArray[2]=true;}
           else{
@@ -170,41 +114,55 @@ void querySerial()
       }
       break;
       }
+
+      case'S':  {// string should start with C
+      anal = Serial.read(); //Read second char and analyze     
+      if (anal == 'I'){ 
+        if (Serial.read() == 'N'){ 
+          if(Serial.parseInt()!=0){
+            patternAnArray[3]=true;}
+          else{
+            patternAnArray[3]=false;
+          }
+        }
+      }
+      break;
+      }
+
+      case'J':  {// string should start with J
+      anal = Serial.read(); //Read second char and analyze     
+      if (anal == 'U'){ 
+        if (Serial.read() == 'G'){ 
+          if(Serial.parseInt()!=0){
+            patternAnArray[4]=true;}
+          else{
+            patternAnArray[4]=false;
+          }
+        }
+      }
+      break;
+      }
+
+      case'b':  {// string should start with S
+      anal = Serial.read(); //Read second char and analyze     
+      if (anal == 'P'){ 
+        if (Serial.read() == 'M'){ 
+          if(Serial.parseInt()!=0){
+            patternAnArray[4]=true;}
+          else{
+            patternAnArray[4]=false;
+          }
+        }
+      }
+      break;
+      }
+      
   }
   
   
   } 
 }
 
-void loadConfiguration(const char *filename, Config &config) {
-  // Open file for reading
-  File file = SD.open(filename);
-
-  // Allocate the memory pool on the stack.
-  // Don't forget to change the capacity to match your JSON document.
-  // Use arduinojson.org/assistant to compute the capacity.
-  StaticJsonBuffer<612> jsonBuffer;
-
-  // Parse the root object
-  JsonObject &root = jsonBuffer.parseObject(file);
-
-  if (!root.success())
-    Serial.println(F("Failed to read file, using default configuration"));
-
-  // Copy values from the JsonObject to the Config
-  //config.port = root["AT"];
-
-  /*
-  strlcpy(config.ATcommand,                   // <- destination
-          root["AT"],                         // <- source
-          sizeof(config.ATcommand));
-  config.color[1]= root["R"];
-  config.color[2]= root["G"];
-  config.color[3]= root["B"];
-  */
-  // Close the file (File's destructor doesn't close the file)
-  file.close();
-}
 
 void callPatterns(){
   //fill_solid( &(leds[0]), NUM_LEDS, CRGB( 0, 0, 0) );
