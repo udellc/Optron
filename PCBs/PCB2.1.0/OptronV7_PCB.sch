@@ -8330,6 +8330,7 @@ drill 1.2 mm</description>
 <part name="LSP3" library="solpad" library_urn="urn:adsk.eagle:library:364" deviceset="MCS08" device="" package3d_urn="urn:adsk.eagle:package:26515/1"/>
 <part name="LSP4" library="solpad" library_urn="urn:adsk.eagle:library:364" deviceset="MCS08" device="" package3d_urn="urn:adsk.eagle:package:26515/1"/>
 <part name="LSP5" library="solpad" library_urn="urn:adsk.eagle:library:364" deviceset="MCS08" device="" package3d_urn="urn:adsk.eagle:package:26515/1"/>
+<part name="RESET_R10K" library="SparkFun-Resistors" library_urn="urn:adsk.eagle:library:532" deviceset="RESISTOR" device="AXIAL-0.3" package3d_urn="urn:adsk.eagle:package:39658/1" value=" "/>
 </parts>
 <sheets>
 <sheet>
@@ -8613,6 +8614,10 @@ drill 1.2 mm</description>
 </instance>
 <instance part="LSP5" gate="G$1" x="55.88" y="124.46" smashed="yes">
 <attribute name="NAME" x="54.61" y="127.381" size="1.778" layer="95"/>
+</instance>
+<instance part="RESET_R10K" gate="G$1" x="134.62" y="180.34" smashed="yes" rot="R180">
+<attribute name="NAME" x="134.62" y="178.816" size="1.778" layer="95" font="vector" rot="R180" align="bottom-center"/>
+<attribute name="VALUE" x="134.62" y="181.864" size="1.778" layer="96" font="vector" rot="R180" align="top-center"/>
 </instance>
 </instances>
 <busses>
@@ -8941,6 +8946,20 @@ drill 1.2 mm</description>
 <wire x1="55.88" y1="121.92" x2="55.88" y2="114.3" width="0.1524" layer="91"/>
 <label x="55.88" y="114.3" size="1.778" layer="95"/>
 </segment>
+<segment>
+<pinref part="TCA.1" gate="G$1" pin="6"/>
+<wire x1="147.32" y1="177.8" x2="142.24" y2="177.8" width="0.1524" layer="91"/>
+<wire x1="152.4" y1="177.8" x2="147.32" y2="177.8" width="0.1524" layer="91"/>
+<pinref part="TCA.1" gate="G$1" pin="7"/>
+<wire x1="152.4" y1="175.26" x2="147.32" y2="175.26" width="0.1524" layer="91"/>
+<wire x1="147.32" y1="175.26" x2="147.32" y2="177.8" width="0.1524" layer="91"/>
+<junction x="147.32" y="177.8"/>
+<pinref part="TCA.1" gate="G$1" pin="8"/>
+<wire x1="152.4" y1="172.72" x2="147.32" y2="172.72" width="0.1524" layer="91"/>
+<wire x1="147.32" y1="172.72" x2="147.32" y2="175.26" width="0.1524" layer="91"/>
+<junction x="147.32" y="175.26"/>
+<label x="144.78" y="177.8" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="USB" class="0">
 <segment>
@@ -9204,29 +9223,34 @@ drill 1.2 mm</description>
 <wire x1="35.56" y1="121.92" x2="35.56" y2="114.3" width="0.1524" layer="91"/>
 <label x="35.56" y="114.3" size="1.778" layer="95"/>
 </segment>
+<segment>
+<pinref part="RESET_R10K" gate="G$1" pin="2"/>
+<wire x1="129.54" y1="180.34" x2="121.92" y2="180.34" width="0.1524" layer="91"/>
+<label x="124.46" y="180.34" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="SDA5V" class="0">
-<segment>
-<pinref part="TCA.1" gate="G$1" pin="4"/>
-<wire x1="152.4" y1="182.88" x2="142.24" y2="182.88" width="0.1524" layer="91"/>
-<label x="144.78" y="182.88" size="1.778" layer="95"/>
-</segment>
 <segment>
 <pinref part="B1" gate="G$1" pin="HV_TXO_1"/>
 <wire x1="180.34" y1="218.44" x2="187.96" y2="218.44" width="0.1524" layer="91"/>
 <label x="185.42" y="218.44" size="1.778" layer="95"/>
 </segment>
-</net>
-<net name="SCL5V" class="0">
 <segment>
 <pinref part="TCA.1" gate="G$1" pin="3"/>
 <wire x1="152.4" y1="185.42" x2="142.24" y2="185.42" width="0.1524" layer="91"/>
 <label x="144.78" y="185.42" size="1.778" layer="95"/>
 </segment>
+</net>
+<net name="SCL5V" class="0">
 <segment>
 <pinref part="B1" gate="G$1" pin="HV_RXI_1"/>
 <wire x1="180.34" y1="215.9" x2="187.96" y2="215.9" width="0.1524" layer="91"/>
 <label x="185.42" y="215.9" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="TCA.1" gate="G$1" pin="4"/>
+<wire x1="152.4" y1="182.88" x2="142.24" y2="182.88" width="0.1524" layer="91"/>
+<label x="144.78" y="182.88" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="DA1" class="0">
@@ -9415,26 +9439,26 @@ drill 1.2 mm</description>
 </net>
 <net name="MO5" class="0">
 <segment>
-<pinref part="74A1" gate="G$1" pin="3"/>
-<wire x1="144.78" y1="241.3" x2="139.7" y2="241.3" width="0.1524" layer="91"/>
-<label x="139.7" y="241.3" size="1.778" layer="95"/>
-</segment>
-<segment>
 <label x="27.94" y="167.64" size="1.778" layer="95"/>
 <pinref part="LED" gate="-2" pin="S"/>
 <wire x1="40.64" y1="167.64" x2="25.4" y2="167.64" width="0.1524" layer="91"/>
 </segment>
-</net>
-<net name="SCK5" class="0">
 <segment>
 <pinref part="74A1" gate="G$1" pin="6"/>
 <wire x1="144.78" y1="233.68" x2="139.7" y2="233.68" width="0.1524" layer="91"/>
 <label x="139.7" y="233.68" size="1.778" layer="95"/>
 </segment>
+</net>
+<net name="SCK5" class="0">
 <segment>
 <label x="27.94" y="165.1" size="1.778" layer="95"/>
 <pinref part="LED" gate="-3" pin="S"/>
 <wire x1="40.64" y1="165.1" x2="25.4" y2="165.1" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="74A1" gate="G$1" pin="3"/>
+<wire x1="144.78" y1="241.3" x2="139.7" y2="241.3" width="0.1524" layer="91"/>
+<label x="139.7" y="241.3" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$2" class="0">
@@ -9455,6 +9479,13 @@ drill 1.2 mm</description>
 <pinref part="E_PIC" gate="-2" pin="S"/>
 <pinref part="R6-22K" gate="G$1" pin="1"/>
 <wire x1="-2.54" y1="284.48" x2="5.08" y2="284.48" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$1" class="0">
+<segment>
+<pinref part="TCA.1" gate="G$1" pin="5"/>
+<pinref part="RESET_R10K" gate="G$1" pin="1"/>
+<wire x1="152.4" y1="180.34" x2="139.7" y2="180.34" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
