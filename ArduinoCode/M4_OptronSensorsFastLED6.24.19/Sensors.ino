@@ -120,6 +120,17 @@ void readAnalog()
   ePicDownVal = analogRead(ePicDownPin);
 }
 
+// Change Brightness
+void changeBrightness(){
+  myBrightness=fsrVal;
+  Serial.println("------");
+  if(myBrightness<0) myBrightness=0;
+  if(myBrightness>780) myBrightness=780;
+  myBrightness=map(myBrightness,0,780,10,255);
+  Serial.println(myBrightness);
+  Serial.println("------");
+}
+
 // Generic subroutine for reading MPU6050 i2c Data
 void measure_mpu6050(void)
 {

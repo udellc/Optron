@@ -45,6 +45,11 @@ const int MPU_ADDR = 0x68; // also define i2c address of MPU
     #include "Wire.h"
 #endif
 
+#define Baud  115200
+#define Pin  A3
+#define HighThreshold  700  //Approx 2 volts 667
+#define LowThreshold 400 //Approx 1 volt 333
+
   MPU6050 accelgyro; // another called accelgyro
 #define INTERRUPT_PIN 11  // use pin 11 on Micro, use pin 2 on Arduino Uno & most boards
 // MPU control/status vars
@@ -129,13 +134,16 @@ void setup() {
   Serial.begin(230400); // Initialize serial port
   delay(3000); // 3 second delay for recovery
 
+  Serial.begin(Baud);
+  pinMode(A3,INPUT);
+  delay(3000);
+  
   // tell FastLED about the LED strip configuration
   FastLED.addLeds<LED_TYPE,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   //FastLED.addLeds<LED_TYPE,DATA_PIN,CLK_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
 
   // set master brightness control
-  FastLED.setBrightness(BRIGHTNESS);
-
+  FastLED.setBrightness(10);
   //==========================================================
 // Sensors Setup:
 //==========================================================
@@ -207,6 +215,8 @@ void loop()
   analogWrite(PWM_pin, HIGH);
   delay(motor_rate);///every 100 miliseconds
 
+  digitalWrite(A3, LOW);
+
 //==========================================================
 // Sensor Stuff
 //==========================================================
@@ -227,6 +237,13 @@ void loop()
 
     // Read Analog Sensor Vals
     readAnalog();
+
+    // Change Brightness
+    changeBrightness();
+    EVERY_N_MILLISECONDS( 10 ) { FastLED.setBrightness(myBrightness); }
+ 
+    // Read Pick Vals
+    readPick();
 
     // Now measure MPU6050, update values in global registers
     measure_mpu6050();

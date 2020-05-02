@@ -22,6 +22,7 @@ CRGBPalette16 gPal; // https://github.com/FastLED/FastLED/wiki/Gradient-color-pa
 #define FRAMES_PER_SECOND  120
 //#define FRAMES_PER_SECOND  240
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
+int myBrightness=0;
 
 // List of patterns to cycle through.  Each is defined as a separate function below.
 // The order in which you declare things is the order of layering from bottom to top
