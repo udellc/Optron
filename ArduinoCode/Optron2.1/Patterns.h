@@ -10,6 +10,7 @@ CRGB drumKitOverlay[NUM_LEDS];  // Drumkit sprite buffer
 CRGB ARGBOverlay[NUM_LEDS];  // ARGB sprite buffer
 CRGB funfettiOverlay[NUM_LEDS];  // wiper buffer
 CRGB bellOverlay[NUM_LEDS];  // Drumkit sprite buffer.0
+bool LEDMask[NUM_LEDS];
 
 // colored dots that pulse for drums
 CRGBPalette16 drumPalette = RainbowColors_p; // Choose a color palette

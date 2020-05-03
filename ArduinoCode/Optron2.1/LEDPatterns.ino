@@ -435,6 +435,12 @@ void callPatterns()
     }
   }
 
+  // set length mask based on position sensor
+  int end_idx = NUM_LEDS*(linVal/(1<<ANLG_RES));
+  LEDFillMask(0, end_idx, true);
+  LEDFillMask(end_idx+1, NUM_LEDS, false);
+  LEDApplyMask();
+
   // send the 'leds' array out to the actual LED strip
   FastLED.show();  
   // insert a delay to keep the framerate modest
@@ -445,6 +451,30 @@ void callPatterns()
   //EVERY_N_SECONDS( 10 ) { nextPattern(); } // change patterns periodically
 
 
+}
+
+void LEDFillMask(int start_idx, int end_idx, bool onoff)
+{
+  start_idx = max(start_idx, 0);
+  end_idx = min(end_idx, NUM_LEDS);
+  while (start_idx < end_idx)
+  {
+    LEDMask[start_idx] = onoff;
+    start_idx++;
+  }
+}
+
+void LEDApplyMask()
+{
+  int idx;
+  for (idx = 0; idx < NUM_LEDS; idx++ )
+  {
+    if (!LEDMask[idx])
+    {
+      // set black
+      leds[idx] = CRGB(0,0,0);
+    }
+  }  
 }
 
 void nextPattern()

@@ -16,6 +16,8 @@ void callPatterns();
 void nextPattern();
 void clipLen(uint8_t *ledStart, uint8_t *ledLen);
 void querySerial();
+void LEDFillMask(uint32_t, uint32_t, bool);
+void LEDApplyMask();
 void sendVals();
 void readXZ();
 void readAnalog();

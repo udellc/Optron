@@ -41,6 +41,9 @@ FASTLED_USING_NAMESPACE
 #define POSITION_ON   1
 #define EPICK_ON      1
 
+// general
+#define ANLG_RES  12
+
 /*=== Serial stuff ===*/
 #define Baud  115200
 // uncoment one of these - which format do we want stuff output on serial?
@@ -153,9 +156,10 @@ void setup() {
   // tell FastLED about the LED strip configuration
   FastLED.addLeds<LED_TYPE,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   //FastLED.addLeds<LED_TYPE,DATA_PIN,CLK_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
-
   // set master brightness control
   FastLED.setBrightness(10);
+  // set fastled mask to all on
+  LEDFillMask(0, NUM_LEDS, true);
   
   //==========================================================
   // Sensors Setup:
@@ -168,7 +172,7 @@ void setup() {
   #endif
   
   // 12 bit analog
-  analogReadResolution(12); 
+  analogReadResolution(ANLG_RES); 
   delay(5000);
 
   // *** Init MPU 6050
