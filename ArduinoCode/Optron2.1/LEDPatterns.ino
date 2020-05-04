@@ -439,10 +439,10 @@ void callPatterns()
   int end_idx = (NUM_LEDS*linVal)/(1<<ANLG_RES);
   LEDFillMask(0, end_idx, true);
   LEDFillMask(end_idx+1, NUM_LEDS, false);
+  LEDApplyMask();
 
   // send the 'leds' array out to the actual LED strip
-  // FastLED.show();  
-  FastLEDShowMask();
+  FastLED.show();
   // insert a delay to keep the framerate modest
   FastLED.delay(1000/FRAMES_PER_SECOND); 
 
@@ -458,10 +458,7 @@ void LEDFillMask(int start_idx, int end_idx, bool onoff)
   start_idx = max(start_idx, 0);
   end_idx = min(end_idx, NUM_LEDS);
   while (start_idx < end_idx)
-  {
-    ledMask[start_idx] = onoff;
-    start_idx++;
-  }
+    ledMask[start_idx++] = onoff;
 }
 
 void LEDApplyMask()
