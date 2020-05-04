@@ -436,13 +436,13 @@ void callPatterns()
   }
 
   // set length mask based on position sensor
-  int end_idx = NUM_LEDS*(linVal/(1<<ANLG_RES));
+  int end_idx = (NUM_LEDS*linVal)/(1<<ANLG_RES);
   LEDFillMask(0, end_idx, true);
   LEDFillMask(end_idx+1, NUM_LEDS, false);
-  LEDApplyMask();
 
   // send the 'leds' array out to the actual LED strip
-  FastLED.show();  
+  // FastLED.show();  
+  FastLEDShowMask();
   // insert a delay to keep the framerate modest
   FastLED.delay(1000/FRAMES_PER_SECOND); 
 
@@ -459,7 +459,7 @@ void LEDFillMask(int start_idx, int end_idx, bool onoff)
   end_idx = min(end_idx, NUM_LEDS);
   while (start_idx < end_idx)
   {
-    LEDMask[start_idx] = onoff;
+    ledMask[start_idx] = onoff;
     start_idx++;
   }
 }
@@ -469,12 +469,35 @@ void LEDApplyMask()
   int idx;
   for (idx = 0; idx < NUM_LEDS; idx++ )
   {
-    if (!LEDMask[idx])
+    if (!ledMask[idx])
     {
       // set black
-      leds[idx] = CRGB(0,0,0);
+      leds[idx] = mask_color;
     }
   }  
+}
+
+void FastLEDShowMask()
+{
+  // copy leds
+  memcpy(ledbuffer, leds, NUM_LEDS * sizeof(CRGB));
+
+  // fill leds with mask
+  int idx;
+  for (idx = 0; idx < NUM_LEDS; idx++ )
+  {
+    if (!ledMask[idx])
+    {
+      // set black
+      leds[idx] = mask_color;
+    }
+  }  
+  
+  // show leds
+  FastLED.show();  
+  
+  // restore leds
+  memcpy(leds, ledbuffer, NUM_LEDS * sizeof(CRGB));
 }
 
 void nextPattern()
