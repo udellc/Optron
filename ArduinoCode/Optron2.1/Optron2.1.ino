@@ -53,7 +53,7 @@ FASTLED_USING_NAMESPACE
 /*=== IR/ZX stuff ===*/
 // ZX consts/defines
 #define IR_CNT  8
-#define TCAADDR 0x71
+#define TCAADDR 0x70
 const int ZX_ADDR = 0x10;  // ZX Sensor I2C address
 
 // ZX Global Variables
@@ -262,8 +262,10 @@ void loop()
     readAnalog();
 
     // Change Brightness
-    changeBrightness();
-    EVERY_N_MILLISECONDS( 10 ) { FastLED.setBrightness(myBrightness); }
+    #if PRESSURE_CTRL
+      changeBrightness();
+      EVERY_N_MILLISECONDS( 10 ) { FastLED.setBrightness(myBrightness); }
+    #endif
  
     // Read Pick Vals
     readPick();
@@ -276,7 +278,7 @@ void loop()
     #endif
 
     // Send new data out to Serial (either binary or human redable specified up top
-    sendVals();
+    // sendVals();
 
    }
 

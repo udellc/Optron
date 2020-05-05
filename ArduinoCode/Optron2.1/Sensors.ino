@@ -21,7 +21,7 @@ void sendVals()
 
     #if IR_ON
       // print all ZX values
-      for (uint8_t i=0; i<8; i++) 
+      for (uint8_t i=0; i<IR_CNT; i++) 
       {
         if ( z_pos[i] != ZX_ERROR ) 
         {
@@ -138,25 +138,6 @@ void readAnalog()
   ePicUpVal = analogRead(ePicUpPin);
   ePicDownVal = analogRead(ePicDownPin);
 }  //  readAnalog  /
-
-// ================================================================
-// Function: changeBrightness
-// Description: Change Brightness
-// ================================================================
-void changeBrightness()
-{
-  myBrightness=fsrVal;
-  #ifdef OUTPUT_READABLE      
-    Serial.println("------ MY BRIGHTNESS ------");
-  #endif
-  if(myBrightness<0) myBrightness=0;
-  if(myBrightness>780) myBrightness=780;
-  myBrightness=map(myBrightness,0,780,10,255);
-  #ifdef OUTPUT_READABLE
-    Serial.println(myBrightness);
-    Serial.println("---------------------------");
-  #endif
-}  //  changeBrightness  /
 
 // ================================================================
 // Function: measure_mpu6050

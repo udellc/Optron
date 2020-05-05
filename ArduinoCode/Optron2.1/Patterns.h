@@ -3,6 +3,12 @@
 #define NUM_LEDS    169
 #include <FastLED.h>
 
+#define PRESSURE_CTRL     2
+#define POSITION_CTRL     0
+#define IR_CTRL           0
+#define IR_ACT_Z_DIST     20
+#define IR_ACT_Z_ERR_DIST 0
+
 CRGB leds[NUM_LEDS];        // Place for final LED buffer at end of each cycle
 CRGB LED_BUFFER[NUM_LEDS];      // volatile LED buffer for pushing/poping
 CRGB tickOverlay[NUM_LEDS]; // Create tick overlay
