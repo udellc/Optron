@@ -1,3 +1,4 @@
+//Declare function names
 void BGi();
 void HSv();
 void rainbow();

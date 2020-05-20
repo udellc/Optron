@@ -9,6 +9,7 @@
 #define on_percentage 50
 #define enable 1
 
+//Similar to C++ using namespace
 FASTLED_USING_NAMESPACE
 
 // FastLED "100-lines-of-code" demo reel, showing just a few
