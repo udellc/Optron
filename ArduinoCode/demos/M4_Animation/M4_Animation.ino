@@ -19,7 +19,7 @@ FASTLED_USING_NAMESPACE
 
 #define LED_TYPE    DOTSTAR
 #define COLOR_ORDER BGR
-#define NUM_LEDS    169
+#define NUM_LEDS    144
 CRGB leds[NUM_LEDS];
 
 #define BRIGHTNESS          255
